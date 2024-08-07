@@ -55,7 +55,15 @@ export class UserService {
         return this.usersRepository.createQueryBuilder('user')
             .leftJoinAndSelect('user.doctorInfo', 'doctorInfo')
             .leftJoinAndSelect('doctorInfo.orgDoctor', 'orgDoctor')
-            .leftJoinAndSelect('orgDoctor.case', 'orgDoctorCases')
+            .leftJoinAndSelect('orgDoctor.case', 'case')
+            .where('user.uuid = :userId', { userId })
+            .getMany();
+    }
+
+    async listCasesByOrgUserId(userId : string) {
+        return this.usersRepository.createQueryBuilder('user')
+            .leftJoinAndSelect('user.organization', 'organization')
+            .leftJoinAndSelect('organization.case', 'case')
             .where('user.uuid = :userId', { userId })
             .getMany();
     }
@@ -94,43 +102,6 @@ export class UserService {
 
     async save(createUserDto: CreateUserDto): Promise<User> {
         return await this.usersRepository.save(createUserDto);
-    }
-
-    async adminDashboard(email: string, numberOfRecords: number = 5, sortOrder: number = -1) {
-        const order = sortOrder === 1 ? "ASC" : "DESC";
-        return await this.usersRepository.find({
-            relations: {
-                organization: true,
-            },
-            where: {
-                role: Role.Organization,
-                createdBy: email,
-                isDeleted: false,
-            },
-            order: {
-                createdAt: order,
-            },
-            take: numberOfRecords,
-        });
-    }
-
-
-    async orgDashboard(email: string, numberOfRecords: number = 5, sortOrder: number = -1) {
-        const order = sortOrder === 1 ? "ASC" : "DESC";
-        return await this.usersRepository.find({
-            relations: {
-                doctorInfo: true,
-            },
-            where: {
-                role: Role.Doctor,
-                createdBy: email,
-                isDeleted: false,
-            },
-            order: {
-                createdAt: order,
-            },
-            take: numberOfRecords,
-        });
     }
 
 }

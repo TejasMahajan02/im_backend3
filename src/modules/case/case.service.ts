@@ -40,6 +40,38 @@ export class CaseService {
         }
     }
 
+    async updateCaseSupport(uuid : string, nameDto: NameDto): Promise<object> {
+        try {
+            return await this.caseSupportRepository.update(uuid, nameDto);
+        } catch (error) {
+            throw new InternalServerErrorException();
+        }
+    }
+
+    async deleteCaseSupport(uuid : string): Promise<object> {
+        try {
+            return await this.caseSupportRepository.update({ uuid }, { isDeleted: true });
+        } catch (error) {
+            throw new InternalServerErrorException();
+        }
+    }
+
+    async updateCaseType(uuid : string, nameDto: NameDto): Promise<object> {
+        try {
+            return await this.caseTypeRepository.update(uuid, nameDto);
+        } catch (error) {
+            throw new InternalServerErrorException();
+        }
+    }
+
+    async deleteCaseType(uuid : string): Promise<object> {
+        try {
+            return await this.caseTypeRepository.update({ uuid }, { isDeleted: true });
+        } catch (error) {
+            throw new InternalServerErrorException();
+        }
+    }
+
     async getAllCaseSupports(): Promise<object> {
         return await this.caseSupportRepository.find({});
     }

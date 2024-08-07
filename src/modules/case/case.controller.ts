@@ -29,6 +29,17 @@ export class CaseController {
         return await this.caseService.addCaseSupport(nameDto);
     }
 
+    // Used for select dropdown
+    @Patch('case-support/:id')
+    async updateCaseSupport(@Param() id: string, @Body() nameDto: NameDto): Promise<object> {
+        return await this.caseService.updateCaseSupport(id, nameDto);
+    }
+
+    @Post('case-support/:id')
+    async deleteCaseSupport(@Param() id: string): Promise<object> {
+        return await this.caseService.deleteCaseSupport(id);
+    }
+
     @Get('case-support')
     async getAllCaseSupports(): Promise<object> {
         return await this.caseService.getAllCaseSupports();
@@ -38,6 +49,16 @@ export class CaseController {
     @Post('case-type')
     async addCaseType(@Body() nameDto: NameDto): Promise<object> {
         return await this.caseService.addCaseType(nameDto);
+    }
+
+    @Patch('case-type/:id')
+    async updateCaseType(@Param() id: string, @Body() nameDto: NameDto): Promise<object> {
+        return await this.caseService.updateCaseType(id, nameDto);
+    }
+
+    @Post('case-type/:id')
+    async deleteCaseType(@Param() id: string): Promise<object> {
+        return await this.caseService.deleteCaseType(id);
     }
 
     @Get('case-type')
@@ -64,33 +85,9 @@ export class CaseController {
         const { uuid, role } = req.user;
 
         if (role === Role.Doctor) {
-
-            // Search for doctors
-            return this.userService.findDoctorByUserId(uuid);
+            return this.userService.listCasesByDoctorUserId(uuid);
         } else {
-            // search for orgs
-            return this.userService.findOrgByUserId(uuid);
-        }
-
-        
-        if (role === Role.Doctor) {
-            // list all cases of doctor
-            const doctorUser = await this.userService.findDoctorByUserId(uuid);
-            if (!doctorUser) {
-                throw new NotFoundException();
-            }
-
-            const orgDoctor = doctorUser.doctorInfo.orgDoctor[0];
-            return await this.caseService.listCasesByOrgDoctor(orgDoctor);
-
-        } else {
-
-            const org = await this.userService.findOrgByUserId(uuid);
-            if (!org) {
-                throw new NotFoundException();
-            }
-
-            return await this.caseService.listCasesByOrg(org.organization);
+            return this.userService.listCasesByOrgUserId(uuid);
         }
     }
 
